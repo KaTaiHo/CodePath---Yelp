@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class BusinessesViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     var businesses: [Business]!
@@ -23,6 +23,7 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         // able to drag one onto the navigation bar
         let searchBar = UISearchBar()
         searchBar.sizeToFit()
+        searchBar.delegate = self
         
         // the UIViewController comes with a navigationItem property
         // this will automatically be initialized for you if when the
@@ -51,25 +52,47 @@ class BusinessesViewController: UIViewController, UITableViewDelegate, UITableVi
         )
     }
     
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        // When there is no text, filteredData is the same as the original data
+//        // When user has entered text into the search box
+//        // Use the filter method to iterate over all items in the data array
+//        // For each item, return true if the item should be included and false if the
+//        // item should NOT be included
+//        
+//        print("in searhBAR")
+//        for item in businesses {
+//            
+//            filteredData.append(item.name!)
+//            print (item.name!)
+//        }
+//        
+//        filteredData = searchText.isEmpty ? filteredData : filteredData.filter({(dataString: String) -> Bool in
+//            // If dataItem matches the searchText, return true to include it
+//            return dataString.range(of: searchText, options: .caseInsensitive) != nil
+//        })
+//        
+//        tableView.reloadData()
+//    }
+    
+    
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // When there is no text, filteredData is the same as the original data
-        // When user has entered text into the search box
-        // Use the filter method to iterate over all items in the data array
-        // For each item, return true if the item should be included and false if the
-        // item should NOT be included
-        
-        print("in searhBAR")
-        for item in businesses {
-            filteredData.append(item.name!)
-            print (item.name!)
+        var search = searchText
+        if(searchText.isEmpty){
+            search = String("Restaurant")
         }
-        
-        filteredData = searchText.isEmpty ? filteredData : filteredData.filter({(dataString: String) -> Bool in
-            // If dataItem matches the searchText, return true to include it
-            return dataString.range(of: searchText, options: .caseInsensitive) != nil
+        Business.searchWithTerm(term: search, completion: { (businesses: [Business]?, error: Error?) -> Void in
+            
+            self.businesses = businesses
+            self.tableView.reloadData()
+            if let businesses = businesses {
+                for business in businesses {
+                    print(business.name!)
+                    print(business.address!)
+                }
+            }
+            
         })
-        
-        tableView.reloadData()
     }
     
     
